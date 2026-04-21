@@ -1,0 +1,66 @@
+---
+title: "Assignment #1: Quarto Data Analysis"
+subtitle: "Assigned Thursday 16/04/2026 Due Monday 20/04/2026"
+format: pdf
+mainfont: "Arial"
+editor: visual
+author: "Nathan Lau and Megan Baker"
+date: "2026-04-16"
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+## Introduction
+United States Forest Service data of an experimental watershed in Southern California, just north of Fresno), was provided for this analysis. Data includes climate, precipitation, net primary production (NPP), and evapotranspiration measurements. Two visualizations were created to analyze measurement trends.
+
+## Libraries setup
+```{r}
+# Clear the environment
+rm(list=ls())
+
+# Libraries
+library(tidyverse)
+library(here)
+library(ggplot2)
+library(lubridate)
+```
+
+## Data import
+Import the p301.csv data into a dataframe.
+```{r}
+# Read csv
+p301 <- read.csv(here("data","p301.csv")) |>
+  mutate(month = as.numeric(month)) |>
+  mutate(year = as.numeric(year)) |>
+  mutate(date = make_date(year, month, day)) |>
+  mutate(month = as.factor(month))
+```
+
+## Plot 1 - Scatterplot - Direct solar vs. transpiration
+```{r}
+# Create a scatterplot
+scatterplot1 <- ggplot(p301, aes(x = direct_solar, 
+                                 y = transpiration, 
+                                 color = month)) +
+  geom_point() +
+  labs(title = "Transpiration and Incoming Direct Solar Radiation", 
+       color = "Month", 
+       y = "Transpiration (m/m²/day)", 
+       x = "Direct solar radiation (kJ/m²/day)") +
+  theme_bw()
+scatterplot1
+```
+Figure 1. This scatterplot shows direct solar radiation in kilojoules per square meter per day against transpiration, measured in meters per square meter per day. Each point is colored by month. Visual inspection of the figure indicates that direct solar radiation and transpiration are positively correlated, with values of both measures lowest in the winter months and highest in the summer months. Many summer measurements show low transpiration rates at various radiation rates, this could indicate low available water for plants to transpire during warm months, further analysis is required.
+
+## Plot 2 - Line chart of estimated standing biomass from 1955 to 2000.
+```{r}
+boxplot_mean_carbon <- ggplot(p301, aes(date, plant_carbon))+
+  geom_line(color="blue") +
+  labs(y = "Plant Carbon (kg/m^2)", 
+       x = "Date", 
+       title = "Estimated Standing Biomass (in units Carbon)") +
+  theme_bw()
+boxplot_mean_carbon
+```
+Figure 2. This line chart plots estimated standing biomass in kilograms of carbon per meter squared against time. Dates range from October 1, 1955 to June 30, 2000. From visual inspection, standing biomass has increased nearly 25 fold over 45 years, although biomass has leveled off or slightly declined in the most recent 7 years of the data. Standing biomass appears to fluctuate seasonally, peaking in the summer and at its lowest values in the winter.
