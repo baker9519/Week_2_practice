@@ -1,0 +1,35 @@
+---
+title: "Yryly_streamflow"
+format: html
+editor: visual
+author: Megan Baker
+date: 4-21-2026
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+library(here)
+library(tidyverse)
+#| echo: false
+#read in the data
+p301 = read.csv(here("Data", "p301.csv"))
+
+#aggregate by water year
+p301_yearly <- p301 |>
+  group_by(wy) |>
+  summarise(total_streamflow = sum(streamflow),
+            total_precip = sum(precip),
+            percent_streamflow = (total_streamflow / total_precip)*100)
+
+#calculate mean, range, and standard deviation of percent streamflow across
+mean(p301_yearly$percent_streamflow)
+range(p301_yearly$percent_streamflow)
+sd(p301_yearly$percent_streamflow)
+```
